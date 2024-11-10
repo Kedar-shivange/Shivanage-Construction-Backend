@@ -1,25 +1,25 @@
 package com.sc.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.sc.entity.ContactForm;
-import com.sc.service.ContactFormService;
+import com.sc.repository.ContactFormRepository;
 
 @RestController
-@RequestMapping("/api/contact")
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000") // Adjust based on your frontend port
 public class ContactFormController {
 
     @Autowired
-    private ContactFormService service;
+    private ContactFormRepository contactFormRepository;
 
-    @PostMapping("/submit")
-    public ResponseEntity<String> submitContactForm(@RequestBody ContactForm contactForm) {
-        service.saveContactForm(contactForm);
-        return ResponseEntity.ok("Form submitted successfully");
+    @PostMapping("/contact")
+    public ResponseEntity<?> submitContactForm(@RequestBody ContactForm contactForm) {
+        contactForm.setSubmittedAt(LocalDateTime.now());
+        contactFormRepository.save(contactForm);
+        return ResponseEntity.ok("{\"message\": \"Form submitted successfully\"}");
     }
 }
